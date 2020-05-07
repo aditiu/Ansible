@@ -1,0 +1,43 @@
+---
+# tasks file for jenkinsAgent
+
+- name: install mlocate
+  package:
+    name: mlocate
+    state: present
+
+- name: setting up mlocate database
+  shell: updatedb
+- name: setting up slave in jenkins
+  ignore_errors: yes
+  no_log: True
+  shell: | 
+     location=`locate jenkins-cli.jar`
+     cat << EOF | java -jar $location -s "http://localhost:8080" -auth {{masteruser}}:{{masterpassword}} create-node {{slavename}}
+     <slave>
+     <name>{{slavename}}</name>
+     <description></description>
+     <remoteFS>{{remotefs}}</remoteFS>
+     <numExecutors>{{exec}}</numExecutors>
+     <mode>{{mode}}</mode>
+     <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
+     <launcher class="hudson.plugins.sshslaves.SSHLauncher" plugin="ssh-slaves@1.10">
+     <host>{{host}}</host>
+     <port>{{port}}</port>
+     <username>{{agentusername}}</username>
+     <password>{{agentpassword}}</password>
+     <maxNumRetries>{{retries}}</maxNumRetries>
+     <sshHostKeyVerificationStrategy class="{{sshHostKeyVerificationStrategy}}"/>
+     <retryWaitTime>{{retrywait}}</retryWaitTime>
+     </launcher>
+     <label>{{label}}</label>
+     <nodeProperties/>
+     <userId>{{userid}}</userId>
+     </slave>
+     EOF
+  register: result
+      
+
+- name: Failed case
+  fail: msg="Node {{slavename}} already exists!! Please give new name."
+  failed_when: "'already exists' in result.stderr"

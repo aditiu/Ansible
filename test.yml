@@ -1,0 +1,13 @@
+---
+- name: Install Jenkins
+  hosts: localhost
+  gather_facts: true
+  become: yes
+  become_user: root
+  tasks:
+     - debug: msg="This is test"
+#     - name: Install ansible using pip
+#       command: pip install sqlalchemy
+     - shell: "whoami"
+       register: out 
+     - debug: msg="{{out}}"
