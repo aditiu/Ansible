@@ -22,8 +22,8 @@
 - name: ip forwarding
   command: sysctl -w net.ipv4.ip_forward=1
 
-#- name: Stop service httpd, if started
-#  service:
-#    name: firewalld
-#    state: stopped
+- name: Stop service httpd, if started
+  service:
+    name: firewalld
+    state: stopped
 
