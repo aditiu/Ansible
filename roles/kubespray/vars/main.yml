@@ -1,4 +1,4 @@
 ---
-home_dir: "/Users/aditi.upadhyay/Drive/work/guavas/ansible/jenkins setup/kubesprayRepo"
-host_path: "/Users/aditi.upadhyay/Drive/work/guavas/ansible/jenkins setup/host"
+home_dir: "/root/Documents/Ansible/kubesprayRepo"
+host_path: "/root/Documents/Ansible/host"
 
