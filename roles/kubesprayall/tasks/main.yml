@@ -1,4 +1,13 @@
 ---
+- name: Disabling Swap on all nodes
+  shell: swapoff -a
+
+- name: Commenting Swap entries in /etc/fstab
+  replace:
+    path: /etc/fstab
+    regexp: '(.*swap*)'
+    replace: '#\1'
+
 #installing epel repo
 - name: 1.Check if EPEL repo is already configured.
   stat: path="/etc/yum.repos.d/epel.repo"
