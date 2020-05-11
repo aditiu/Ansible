@@ -12,8 +12,8 @@ vm3 ansible_user=root
 localhost ansible_connection=local
 
 [all]
-vm2 ansible_user=root ansible_host=10.0.2.21 
-vm3 ansible_user=root ansible_host=10.0.2.20
+vm2 ansible_user=root ansible_host=192.168.0.106 
+vm3 ansible_user=root ansible_host=192.168.0.107
 
 [kube-master]
 vm2
