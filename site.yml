@@ -46,6 +46,6 @@
     - role: kubesprayDashboard 
       tags: masterDash
     - role: kubeDeployContainer
-
+      tags: container 
 
 

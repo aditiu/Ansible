@@ -1,29 +1,26 @@
 ---
 
-#Tomcat Steps     
-     - name: check tomcat service exist or not
-       command: "kubectl get services -l app=tomcat1"
-       register: found_service_tomcat
+#Jenkins Steps     
+     - name: check jenkins service exist or not
+       command: "kubectl get services -l app=jenkins"
+       register: found_service_jenkins
 
-     - name: remove tomcat service
-       command: "kubectl delete services tomcat1"
-       when: found_service_tomcat.stdout != ""
+     - name: remove jenkins service
+       command: "kubectl delete services jenkins"
+       when: found_service_jenkins.stdout != ""
 
-     - name: check tomcat deployment exist or not
-       command: "kubectl get deployments -l app=tomcat1"
-       register: found_deployment_tomcat
+     - name: check jenkins deployment exist or not
+       command: "kubectl get deployments -l app=jenkins"
+       register: found_deployment_jenkins
 
-     - name: remove tomcat deployment
-       command: "kubectl delete deployments tomcat1"
-       when: found_deployment_tomcat.stdout != ""
+     - name: remove jenkins deployment
+       command: "kubectl delete deployments jenkins"
+       when: found_deployment_jenkins.stdout != ""
 
-     - name: Find out playbooks path
-       shell: pwd
-       register: playbook_path_output
-     - name: copy tomcat yml file to host location
+     - name: copy jenkins yml file to host location
        copy:
-         src: tomcat.yml
-         dest: "tomcat.yml"
+         src: jenkins.yml
+         dest: "jenkins.yml"
        
-     - name: create tomcat service/deployment from tomcat file
-       command: "kubectl create -f tomcat.yml"
+     - name: create jenkins service/deployment from jenkins file
+       command: "kubectl create -f jenkins.yml"
