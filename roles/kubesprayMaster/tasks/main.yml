@@ -12,7 +12,7 @@
     permanent: yes
     state: enabled
   become: yes
-  with_items:  "{{portsMaster}}" 
+  with_items:  "{{ports}}" 
 
 - name: reload firewall
   command: sudo firewall-cmd --reload
@@ -24,8 +24,56 @@
 - name: ip forwarding
   command: sysctl -w net.ipv4.ip_forward=1
 
-- name: Stop service firewalld, if started
-  service:
-    name: firewalld
-    state: stopped
+#- name: Stop service httpd, if started
+#  service:
+#    name: firewalld
+#    state: stopped
+
+- name: Disabling Swap on all nodes
+  shell: swapoff -a
+
+- name: Commenting Swap entries in /etc/fstab
+  replace:
+    path: /etc/fstab
+    regexp: '(.*swap*)'
+    replace: '#\1'
+
+#installing epel repo
+- name: 1.Check if EPEL repo is already configured.
+  stat: path="/etc/yum.repos.d/epel.repo"
+  register: epel_repofile_result
+ 
+- name: 2.Install EPEL repo.
+  yum:
+    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
+    state: present
+  register: result
+  when: not epel_repofile_result.stat.exists
+ 
+- name: 3.Import EPEL GPG key.
+  rpm_key:
+    key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
+    state: present
+  when: not epel_repofile_result.stat.exists
+
+#install ansible
+
+- name: install ansible
+  yum:
+    name: ansible
+    state: present
+
+- name: install python-pip
+  yum:
+    name: python-pip
+    state: present
+
+- name: install jinja2
+  command: pip install Jinja2
+
+- name: install python36
+  yum:
+    name: python36
+    state: present
+
 

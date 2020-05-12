@@ -1,0 +1,4 @@
+---
+# Jenkins variable
+kube_dir: /root/Documents
+bin_dir: /usr/local/bin 

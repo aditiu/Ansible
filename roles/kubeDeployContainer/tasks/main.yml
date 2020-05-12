@@ -1,26 +1,28 @@
 ---
+- name: Kubernetes Apps | Jenkins Templates list
+  set_fact:
+    jenkins_templates:
+      - {file: jenkins-ns.yml, type: ns, name: jenkins}
+      - {file: jenkins-sa.yml, type: sa, name: jenkins}
+      - {file: jenkins-pv.yml, type: pv, name: jenkins-volume}
+      - {file: jenkins-pvc.yml, type: pvc, name: jenkins-claim}
+      - {file: jenkins-role.yml, type: rolebinding, name: jenkins}
+      - {file: jenkins-dep.yml, type: deployment, name: jenkins}
+      - {file: jenkins-svc.yml, type: svc, name: jenkins}
 
-#Jenkins Steps     
-     - name: check jenkins service exist or not
-       command: "kubectl get services -l app=jenkins"
-       register: found_service_jenkins
+- name: Kubernetes Apps | Lay Down Jenkins Template
+  template:
+    src: "{{ item.file }}.j2"
+    dest: "{{ kube_dir }}/{{ item.file }}"
+  with_items: "{{ jenkins_templates }}"
+  register: manifests
 
-     - name: remove jenkins service
-       command: "kubectl delete services jenkins"
-       when: found_service_jenkins.stdout != ""
-
-     - name: check jenkins deployment exist or not
-       command: "kubectl get deployments -l app=jenkins"
-       register: found_deployment_jenkins
-
-     - name: remove jenkins deployment
-       command: "kubectl delete deployments jenkins"
-       when: found_deployment_jenkins.stdout != ""
-
-     - name: copy jenkins yml file to host location
-       copy:
-         src: jenkins.yml
-         dest: "jenkins.yml"
-       
-     - name: create jenkins service/deployment from jenkins file
-       command: "kubectl create -f jenkins.yml"
+- name: Kubernetes Apps | Start Jenkins Resources
+  kube:
+    name: "{{ item.item.name }}"
+    namespace: jenkins
+    kubectl: "{{ bin_dir }}/kubectl"
+    resource: "{{ item.item.type }}"
+    filename: "{{ kube_dir }}/{{ item.item.file }}"
+    state: "latest"
+  with_items: "{{ manifests.results }}"
